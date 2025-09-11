@@ -1,0 +1,31 @@
+{
+    // ...existing code...
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}",
+            "sourceMaps": true,                // Enable source maps
+            "trace": true,                     // Enable diagnostic output
+            "runtimeArgs": [
+                "--disable-extensions",
+                "--remote-debugging-port=9222"
+            ],
+            "userDataDir": "${workspaceFolder}/.vscode/chrome", // Separate user data
+            "showAsyncStacks": true,           // Better async stack traces
+            "env": {
+                "NODE_ENV": "development"
+            }
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": "Attach to Chrome",
+            "port": 9222,
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}

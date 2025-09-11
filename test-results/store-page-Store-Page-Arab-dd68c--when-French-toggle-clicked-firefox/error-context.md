@@ -1,0 +1,103 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - button [ref=e6]:
+            - img [ref=e7]
+          - link:
+            - /url: /stores/ahmed-grocery?locale=ar
+          - generic [ref=e11]:
+            - link [ref=e12] [cursor=pointer]:
+              - /url: /stores/ahmed-grocery/search?locale=ar
+              - img [ref=e13] [cursor=pointer]
+            - link [ref=e16] [cursor=pointer]:
+              - /url: /stores/ahmed-grocery/cart?locale=ar
+              - img [ref=e17] [cursor=pointer]
+            - link "دخول" [ref=e21] [cursor=pointer]:
+              - /url: /stores/ahmed-grocery/auth/signin?locale=ar
+        - generic [ref=e22]:
+          - link "Français" [ref=e23] [cursor=pointer]:
+            - /url: /stores/ahmed-grocery?locale=fr
+          - link "العربية" [ref=e24] [cursor=pointer]:
+            - /url: /stores/ahmed-grocery?locale=ar
+    - complementary [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - heading "بقالة أحمد" [level=2] [ref=e29]
+          - button [ref=e30]:
+            - img [ref=e31]
+        - navigation [ref=e34]:
+          - list [ref=e36]:
+            - listitem [ref=e37]:
+              - link "الرئيسية" [ref=e38] [cursor=pointer]:
+                - /url: /stores/ahmed-grocery?locale=ar
+                - img [ref=e39] [cursor=pointer]
+                - generic [ref=e42] [cursor=pointer]: الرئيسية
+            - listitem [ref=e43]:
+              - link "البحث" [ref=e44] [cursor=pointer]:
+                - /url: /stores/ahmed-grocery/search?locale=ar
+                - img [ref=e45] [cursor=pointer]
+                - generic [ref=e48] [cursor=pointer]: البحث
+            - listitem [ref=e49]:
+              - link "السلة" [ref=e50] [cursor=pointer]:
+                - /url: /stores/ahmed-grocery/cart?locale=ar
+                - img [ref=e51] [cursor=pointer]
+                - generic [ref=e55] [cursor=pointer]: السلة
+          - generic [ref=e56]:
+            - heading "الفئات" [level=3] [ref=e57]
+            - list [ref=e58]:
+              - listitem [ref=e59]:
+                - link "ألبان وبيض" [ref=e60] [cursor=pointer]:
+                  - /url: /stores/ahmed-grocery/category/aae66082-52ea-42a9-88d7-3716868fe924?locale=ar
+              - listitem [ref=e61]:
+                - link "فواكه وخضروات" [ref=e62] [cursor=pointer]:
+                  - /url: /stores/ahmed-grocery/category/f4bc4447-dfaa-49e4-b96b-290708197761?locale=ar
+              - listitem [ref=e63]:
+                - link "لحوم ودواجن" [ref=e64] [cursor=pointer]:
+                  - /url: /stores/ahmed-grocery/category/5a7aa074-aa46-4b94-88db-d9fcf7ed4703?locale=ar
+              - listitem [ref=e65]:
+                - link "مشروبات" [ref=e66] [cursor=pointer]:
+                  - /url: /stores/ahmed-grocery/category/e5cc3cbf-f279-4aa1-8e10-19900c47f749?locale=ar
+          - generic [ref=e67]:
+            - heading "الحساب" [level=3] [ref=e68]
+            - list [ref=e69]:
+              - listitem [ref=e70]:
+                - link "تسجيل الدخول" [ref=e71] [cursor=pointer]:
+                  - /url: /stores/ahmed-grocery/auth/signin?locale=ar
+                  - img [ref=e72] [cursor=pointer]
+                  - generic [ref=e76] [cursor=pointer]: تسجيل الدخول
+              - listitem [ref=e77]:
+                - link "إنشاء حساب" [ref=e78] [cursor=pointer]:
+                  - /url: /stores/ahmed-grocery/auth/signup?locale=ar
+                  - img [ref=e79] [cursor=pointer]
+                  - generic [ref=e84] [cursor=pointer]: إنشاء حساب
+    - main [ref=e85]:
+      - generic [ref=e86]:
+        - generic [ref=e88]:
+          - button "ألبان وبيض" [ref=e89]
+          - button "فواكه وخضروات" [ref=e90]
+          - button "لحوم ودواجن" [ref=e91]
+          - button "مشروبات" [ref=e92]
+        - generic [ref=e93]:
+          - heading "المنتجات المميزة" [level=2] [ref=e94]
+          - paragraph [ref=e96]: لا توجد منتجات مميزة متاحة حالياً
+        - generic [ref=e97]:
+          - heading "معلومات المتجر" [level=3] [ref=e98]
+          - generic [ref=e99]:
+            - generic [ref=e100]:
+              - generic [ref=e101]: "الهاتف:"
+              - generic [ref=e102]: "0555123456"
+            - generic [ref=e103]:
+              - generic [ref=e104]: "رسوم التوصيل:"
+              - generic [ref=e105]: 2 DZD
+            - generic [ref=e106]:
+              - generic [ref=e107]: "الحد الأدنى للطلب:"
+              - generic [ref=e108]: 10 DZD
+  - button "Open Next.js Dev Tools" [ref=e114] [cursor=pointer]:
+    - img [ref=e115] [cursor=pointer]
+  - alert [ref=e119]
+```

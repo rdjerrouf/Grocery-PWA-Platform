@@ -1,0 +1,49 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - img "Logo" [ref=e6]
+        - heading "Grocery PWA Platform" [level=1] [ref=e7]
+      - navigation [ref=e8]:
+        - link "Home" [ref=e9] [cursor=pointer]:
+          - /url: "#"
+        - link "Stores" [ref=e10] [cursor=pointer]:
+          - /url: "#"
+        - link "Cart" [ref=e11] [cursor=pointer]:
+          - /url: "#"
+  - main [ref=e12]:
+    - generic [ref=e13]:
+      - heading "Multi-Tenant Grocery Platform" [level=2] [ref=e14]
+      - paragraph [ref=e15]: Supporting French and Arabic for Algerian grocery stores
+    - generic [ref=e16]:
+      - heading "Demo Store" [level=3] [ref=e17]
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e21]: 🏪
+          - generic [ref=e22]:
+            - heading "Ahmed Grocery Store" [level=4] [ref=e23]
+            - paragraph [ref=e24]: Sample grocery store with French/Arabic support
+        - generic [ref=e25]:
+          - link "View in French" [ref=e26] [cursor=pointer]:
+            - /url: /stores/ahmed-grocery?locale=fr
+          - link "View in Arabic" [ref=e27] [cursor=pointer]:
+            - /url: /stores/ahmed-grocery?locale=ar
+    - generic [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]: 🏪
+        - heading "Multi-Tenant" [level=3] [ref=e31]
+        - paragraph [ref=e32]: Each grocery store has its own products and branding
+      - generic [ref=e33]:
+        - generic [ref=e34]: 🌍
+        - heading "Bilingual" [level=3] [ref=e35]
+        - paragraph [ref=e36]: French and Arabic language support
+      - generic [ref=e37]:
+        - generic [ref=e38]: 📱
+        - heading "PWA Ready" [level=3] [ref=e39]
+        - paragraph [ref=e40]: Progressive Web App with offline capabilities
+  - contentinfo [ref=e41]:
+    - paragraph [ref=e43]: © 2025 Grocery PWA Platform. Built with Next.js & Supabase.
+```
