@@ -127,7 +127,7 @@ export function Sidebar({ tenant, categories, locale, isOpen, onToggle }: Sideba
             </div>
             <Button 
               variant="ghost" 
-              size="icon"
+              size="sm"
               onClick={onToggle}
               className="md:hidden"
             >

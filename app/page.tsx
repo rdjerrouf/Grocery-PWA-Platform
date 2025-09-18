@@ -1,85 +1,96 @@
-import Image from "next/image";
-import Link from "next/link";
+import { createServerClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import Link from 'next/link'
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = createServerClient()
+
+  // Get all active tenants
+  const { data: tenants, error } = await supabase
+    .from('tenants')
+    .select('subdomain, name_fr, name_ar, logo_url')
+    .eq('is_active', true)
+    .order('name_fr')
+
+  // If there's only one tenant, redirect to it
+  if (tenants && tenants.length === 1) {
+    redirect(`/stores/${tenants[0].subdomain}`)
+  }
+
+  if (error || !tenants || tenants.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            DzMarket
+          </h1>
+          <p className="text-gray-600 mb-8">
+            Algerian Local Marketplace Platform
+          </p>
+          <p className="text-gray-500">
+            No stores are currently available.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="bg-gray-100 shadow-md">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center">
-            <Image src="/globe.svg" alt="Logo" width={32} height={32} />
-            <h1 className="text-2xl font-bold ml-2">Grocery PWA Platform</h1>
-          </div>
-          <nav>
-            <a href="#" className="text-gray-600 hover:text-gray-900 mr-4">Home</a>
-            <a href="#" className="text-gray-600 hover:text-gray-900 mr-4">Stores</a>
-            <a href="#" className="text-gray-600 hover:text-gray-900">Cart</a>
-          </nav>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold text-gray-900 mb-4">
+            DzMarket
+          </h1>
+          <p className="text-xl text-gray-600 mb-2">
+            السوق المحلي الجزائري
+          </p>
+          <p className="text-lg text-gray-500">
+            Choose your local grocery store
+          </p>
         </div>
-      </header>
 
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <section className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">Multi-Tenant Grocery Platform</h2>
-          <p className="text-lg text-gray-600 mb-8">Supporting French and Arabic for Algerian grocery stores</p>
-        </section>
-
-        {/* Demo Store */}
-        <section className="max-w-2xl mx-auto">
-          <h3 className="text-2xl font-semibold mb-6 text-center">Demo Store</h3>
-          <div className="bg-white border rounded-lg p-6 shadow-sm">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">🏪</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {tenants.map((tenant) => (
+            <Link
+              key={tenant.subdomain}
+              href={`/stores/${tenant.subdomain}`}
+              className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden"
+            >
+              <div className="p-6">
+                {tenant.logo_url && (
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                    <img
+                      src={tenant.logo_url}
+                      alt={tenant.name_fr}
+                      className="w-12 h-12 object-contain"
+                    />
+                  </div>
+                )}
+                <h2 className="text-xl font-semibold text-gray-900 text-center mb-2">
+                  {tenant.name_fr}
+                </h2>
+                {tenant.name_ar && (
+                  <p className="text-gray-600 text-center text-lg" dir="rtl">
+                    {tenant.name_ar}
+                  </p>
+                )}
+                <div className="mt-4 text-center">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                    Visit Store
+                  </span>
+                </div>
               </div>
-              <div>
-                <h4 className="text-xl font-semibold">Ahmed Grocery Store</h4>
-                <p className="text-gray-600">Sample grocery store with French/Arabic support</p>
-              </div>
-            </div>
-            
-            <div className="flex gap-3">
-              <Link 
-                href="/stores/ahmed-grocery?locale=fr"
-                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-center"
-              >
-                View in French
-              </Link>
-              <Link 
-                href="/stores/ahmed-grocery?locale=ar"
-                className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-center"
-              >
-                View in Arabic
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Features */}
-        <section className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center p-6">
-            <div className="text-3xl mb-4">🏪</div>
-            <h3 className="font-semibold mb-2">Multi-Tenant</h3>
-            <p className="text-gray-600 text-sm">Each grocery store has its own products and branding</p>
-          </div>
-          <div className="text-center p-6">
-            <div className="text-3xl mb-4">🌍</div>
-            <h3 className="font-semibold mb-2">Bilingual</h3>
-            <p className="text-gray-600 text-sm">French and Arabic language support</p>
-          </div>
-          <div className="text-center p-6">
-            <div className="text-3xl mb-4">📱</div>
-            <h3 className="font-semibold mb-2">PWA Ready</h3>
-            <p className="text-gray-600 text-sm">Progressive Web App with offline capabilities</p>
-          </div>
-        </section>
-      </main>
-
-      <footer className="bg-gray-100 mt-auto">
-        <div className="container mx-auto px-4 py-4 text-center text-gray-600">
-          <p>&copy; 2025 Grocery PWA Platform. Built with Next.js & Supabase.</p>
+            </Link>
+          ))}
         </div>
-      </footer>
+
+        <div className="text-center mt-12">
+          <p className="text-gray-500 text-sm">
+            Powered by Supabase • Built with Next.js
+          </p>
+        </div>
+      </div>
     </div>
-  );
+  )
 }

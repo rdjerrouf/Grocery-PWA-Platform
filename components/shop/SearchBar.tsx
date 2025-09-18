@@ -1,21 +1,21 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 // Simple debounce utility
-function debounce<T extends (...args: any[]) => void>(
-  func: T,
+function debounce(
+  func: (query: string) => void,
   wait: number
-): T & { cancel: () => void } {
+): ((query: string) => void) & { cancel: () => void } {
   let timeout: NodeJS.Timeout | null = null;
 
-  const debounced = ((...args: Parameters<T>) => {
+  const debounced = ((query: string) => {
     if (timeout) clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  }) as T & { cancel: () => void };
+    timeout = setTimeout(() => func(query), wait);
+  }) as ((query: string) => void) & { cancel: () => void };
 
   debounced.cancel = () => {
     if (timeout) {
@@ -62,7 +62,7 @@ export function SearchBar({
           params.delete('q');
         }
         params.set('locale', locale);
-        
+
         router.push(`/stores/${tenantSlug}/search?${params.toString()}`);
       }
     }, 300),
@@ -128,7 +128,7 @@ export function SearchBar({
           <Button
             type="button"
             variant="ghost"
-            size="icon"
+            size="sm"
             onClick={handleClear}
             className={`absolute top-1/2 transform -translate-y-1/2 ${
               isRTL ? 'left-2' : 'right-2'

@@ -99,7 +99,7 @@ test.describe('API Endpoints', () => {
       
       // Should not contain service role key or other secrets
       expect(pageContent).not.toContain('service_role');
-      expect(pageContent).not.toContain('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'); // JWT prefix
+      expect(pageContent).not.toContain('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'); // Should not expose JWT tokens
     });
   });
 });

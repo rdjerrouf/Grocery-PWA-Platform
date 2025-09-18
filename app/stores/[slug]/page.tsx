@@ -3,6 +3,7 @@ import { ProductCard } from '@/components/shop/ProductCard'
 import { StoreLayout } from '@/components/layout/StoreLayout'
 import { getStoreData } from '@/lib/supabase/queries'
 import { dbProductsToFrontend } from '@/lib/utils/product'
+import { ShoppingBasket, Apple, Milk, Sandwich, Beef, Carrot, Cookie, Coffee } from 'lucide-react'
 
 interface StorePageProps {
   params: {
@@ -20,12 +21,13 @@ export default async function StorePage({ params, searchParams }: StorePageProps
 
   // Fetch store data from Supabase
   const storeData = await getStoreData(slug)
-  
+
   if (!storeData) {
     notFound()
   }
 
   const { tenant, categories, featuredProducts } = storeData
+
 
   // Convert database products to frontend format
   const products = dbProductsToFrontend(featuredProducts)
@@ -33,25 +35,44 @@ export default async function StorePage({ params, searchParams }: StorePageProps
   // Get display name based on locale
   const storeName = locale === 'ar' ? (tenant.name_ar || tenant.name) : tenant.name
 
+  // Category icon mapping
+  const getCategoryIcon = (categoryName: string) => {
+    const name = categoryName.toLowerCase()
+    if (name.includes('fruits') || name.includes('فواكه')) return Apple
+    if (name.includes('dairy') || name.includes('ألبان')) return Milk
+    if (name.includes('bread') || name.includes('خبز')) return Sandwich
+    if (name.includes('meat') || name.includes('لحوم')) return Beef
+    if (name.includes('vegetables') || name.includes('خضروات')) return Carrot
+    if (name.includes('snacks') || name.includes('وجبات')) return Cookie
+    if (name.includes('beverages') || name.includes('مشروبات')) return Coffee
+    return ShoppingBasket
+  }
+
   return (
     <StoreLayout tenant={tenant} categories={categories} locale={locale}>
-      <div className="container mx-auto px-4 py-8">
-        {/* Categories Navigation */}
+      <div className="bg-gray-50 min-h-screen">
+        {/* Categories Navigation - Large Circular Icons */}
         {categories.length > 0 && (
-          <section className="mb-8">
-            <div className={`flex gap-2 overflow-x-auto ${locale === 'ar' ? 'justify-end flex-row-reverse' : ''}`}>
+          <section className="bg-white py-8 px-4 shadow-sm">
+            <div className={`flex gap-8 overflow-x-auto scrollbar-hide ${locale === 'ar' ? 'justify-center flex-row-reverse' : 'justify-center'} max-w-6xl mx-auto`}>
               {categories.map((category) => {
-                const categoryName = locale === 'ar' ? 
-                  (category.name_ar || category.name) : 
+                const categoryName = locale === 'ar' ?
+                  (category.name_ar || category.name) :
                   category.name
-                
+                const IconComponent = getCategoryIcon(categoryName)
+
                 return (
-                  <button
+                  <div
                     key={category.id}
-                    className={`px-4 py-2 bg-secondary text-secondary-foreground rounded-lg whitespace-nowrap hover:bg-secondary/80 ${locale === 'ar' ? 'text-right' : 'text-left'}`}
+                    className="flex flex-col items-center gap-3 min-w-[100px] cursor-pointer group"
                   >
-                    {categoryName}
-                  </button>
+                    <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center group-hover:from-green-500 group-hover:to-green-700 transition-all duration-300 shadow-lg group-hover:shadow-xl transform group-hover:scale-105">
+                      <IconComponent className="w-10 h-10 text-white" />
+                    </div>
+                    <span className={`text-sm text-gray-800 text-center font-semibold leading-tight ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                      {categoryName}
+                    </span>
+                  </div>
                 )
               })}
             </div>
@@ -59,29 +80,32 @@ export default async function StorePage({ params, searchParams }: StorePageProps
         )}
 
         {/* Featured Products */}
-        <section>
-          <h2 className={`text-xl font-semibold mb-6 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+        <section className="px-4 py-8">
+          <h2 className={`text-2xl font-bold mb-8 max-w-6xl mx-auto ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
             {locale === 'ar' ? 'المنتجات المميزة' : 'Produits en vedette'}
+            <div className="w-16 h-1 bg-green-500 mt-2"></div>
           </h2>
-          
+
           {products.length > 0 ? (
-            <div 
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            <div
+              className="flex justify-center gap-6 max-w-7xl mx-auto px-4"
               data-testid="product-grid"
             >
-              {products.map((product) => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product} 
-                  locale={locale}
-                />
+              {products.slice(0, 3).map((product, index) => (
+                <div key={product.id} className="flex-1 max-w-sm">
+                  <ProductCard
+                    product={product}
+                    locale={locale}
+                    gradientIndex={index}
+                  />
+                </div>
               ))}
             </div>
           ) : (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
-                {locale === 'ar' ? 
-                  'لا توجد منتجات مميزة متاحة حالياً' : 
+                {locale === 'ar' ?
+                  'لا توجد منتجات مميزة متاحة حالياً' :
                   'Aucun produit en vedette disponible pour le moment'
                 }
               </p>

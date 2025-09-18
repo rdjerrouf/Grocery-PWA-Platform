@@ -17,6 +17,10 @@
 /.next/
 /out/
 
+# Build artifacts that may contain embedded secrets
+/.next/server/
+/.next/static/
+
 # production
 /build
 
@@ -30,8 +34,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files - NEVER commit sensitive data
 .env*
+.env.local
+.env.development
+.env.production
 
 # vercel
 .vercel
@@ -39,3 +46,23 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Security - Additional sensitive files
+*.key
+*.pem
+*.p12
+*.pfx
+*secret*
+*credential*
+/supabase/.env
+/supabase/.env.*
+
+# Test reports that might contain sensitive data
+/test-results/
+/playwright-report/
+!/playwright-report/index.html
+
+# Temporary files that might contain secrets
+*.tmp
+*.temp
+.cache/

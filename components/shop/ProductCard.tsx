@@ -11,20 +11,35 @@ import { useCartStore } from '@/stores/useCartStore';
 interface ProductCardProps {
   product: Product;
   locale?: 'fr' | 'ar';  // French or Arabic
+  gradientIndex?: number; // Index for gradient selection
 }
 
-export function ProductCard({ product, locale = 'fr' }: ProductCardProps) {
+// Define gradient backgrounds EXACTLY matching the desired template
+const getProductGradient = (productName: string, index: number) => {
+  const gradients = [
+    'bg-gradient-to-br from-orange-100 to-orange-300', // Apple (first) - Orange gradient
+    'bg-gradient-to-br from-blue-50 to-blue-200',      // Milk (second) - Light blue gradient
+    'bg-gradient-to-br from-yellow-100 to-yellow-300'  // Bread (third) - Yellow gradient
+  ];
+  return gradients[index % gradients.length];
+};
+
+export function ProductCard({ product, locale = 'fr', gradientIndex = 0 }: ProductCardProps) {
   const { items, addItem, updateQuantity, removeItem } = useCartStore();
-  
+
   // Get current quantity from cart
   const cartItem = items.find(item => item.productId === product.id);
-  const quantity = cartItem?.quantity || 0; 
-  
+  const quantity = cartItem?.quantity || 0;
+
   const displayName = locale === 'ar' ? product.nameAr || product.name : product.name;
   const displayDescription = locale === 'ar' ? product.descriptionAr || product.description : product.description;
-  const finalPrice = product.salePrice || product.price; // Prices already in cents
+  const finalPrice = product.salePrice || product.price;
   const hasDiscount = !!product.salePrice && product.salePrice < product.price;
+  const discountPercentage = hasDiscount ? Math.round(((product.price - product.salePrice!) / product.price) * 100) : 0;
   const isOutOfStock = product.stockQuantity <= 0;
+
+  // Get gradient based on product index
+  const gradientClass = getProductGradient(displayName, gradientIndex);
 
   // Cart handlers
   const handleAddToCart = () => {
@@ -59,29 +74,49 @@ export function ProductCard({ product, locale = 'fr' }: ProductCardProps) {
   };
 
   return (
-    <div 
-      className="bg-card border border-secondary/50 rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+    <div
+      className="bg-white rounded-2xl overflow-hidden group transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 w-full max-w-sm mx-auto shadow-lg"
       data-testid="product-card"
     >
-      {/* Product Image */}
-      <div className="relative aspect-square w-full bg-secondary/30">
+      {/* Product Image with Colorful Background */}
+      <div className={`relative aspect-square w-full ${gradientClass} overflow-hidden flex items-center justify-center p-8`}>
         <Image
-          src={product.imageUrl || '/images/product-placeholder.png'}
+          src={product.imageUrl || '/images/product-placeholder.svg'}
           alt={displayName}
-          fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+          width={200}
+          height={200}
+          className="object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-lg"
+          priority={product.isFeatured}
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = '/images/product-placeholder.svg';
+          }}
         />
-        
+
+        {/* Discount Badge */}
         {hasDiscount && (
-          <div className="absolute top-3 left-3 bg-red-500 text-white px-2.5 py-1 rounded-full text-xs font-semibold">
-            SALE
+          <div className={`absolute top-4 ${locale === 'ar' ? 'right-4' : 'left-4'} bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg`}>
+            {locale === 'ar' ? `خصم ${discountPercentage}%` : `خصم ${discountPercentage}%`}
           </div>
         )}
 
+        {/* New Badge for Featured Products */}
+        {!hasDiscount && product.isFeatured && (
+          <div className={`absolute top-4 ${locale === 'ar' ? 'right-4' : 'left-4'} bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg`}>
+            {locale === 'ar' ? 'جديد' : 'جديد'}
+          </div>
+        )}
+
+        {/* Heart/Bookmark Icon */}
+        <div className={`absolute top-4 ${locale === 'ar' ? 'left-4' : 'right-4'} w-10 h-10 bg-white/90 rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition-all duration-200 shadow-md hover:shadow-lg`}>
+          <svg className="w-5 h-5 text-gray-600 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </div>
+
         {isOutOfStock && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <span className="text-white font-medium text-sm">
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm">
+            <span className="text-white font-bold text-lg bg-black/70 px-4 py-2 rounded-lg">
               {locale === 'ar' ? 'نفد المخزون' : 'Rupture de stock'}
             </span>
           </div>
@@ -89,23 +124,23 @@ export function ProductCard({ product, locale = 'fr' }: ProductCardProps) {
       </div>
 
       {/* Product Info */}
-      <div className="p-4 flex flex-col">
-        <h3 className={`text-base font-semibold text-foreground mb-1.5 truncate h-6 ${locale === 'ar' ? 'text-right' : 'text-left'}`} title={displayName}>
+      <div className="p-6 flex flex-col">
+        <h3 className={`text-lg font-bold text-gray-900 mb-2 ${locale === 'ar' ? 'text-right' : 'text-left'}`} title={displayName}>
           {displayName}
         </h3>
-        
-        <p className={`text-sm text-foreground/70 mb-3 h-10 flex-grow ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
-          {displayDescription}
+
+        <p className={`text-sm text-gray-600 mb-4 ${locale === 'ar' ? 'text-right' : 'text-left'} line-clamp-2`}>
+          {displayDescription || (locale === 'ar' ? 'منتج عالي الجودة' : 'Produit de haute qualité')}
         </p>
 
         {/* Price */}
-        <div className={`flex items-baseline gap-2 mb-4 ${locale === 'ar' ? 'justify-end' : ''}`}>
-            <span className="text-xl font-bold text-primary">
-              {formatCurrency(finalPrice)}
+        <div className={`flex items-baseline gap-3 mb-6 ${locale === 'ar' ? 'justify-end flex-row-reverse' : ''}`}>
+            <span className="text-2xl font-bold text-green-600">
+              {locale === 'ar' ? 'د.ج' : ''} {formatCurrency(finalPrice).replace(' DZD', '')}
             </span>
             {hasDiscount && (
-              <span className="text-sm text-foreground/50 line-through">
-                {formatCurrency(product.price)}
+              <span className="text-lg text-gray-400 line-through">
+                {locale === 'ar' ? 'د.ج' : ''} {formatCurrency(product.price).replace(' DZD', '')}
               </span>
             )}
         </div>
@@ -116,33 +151,32 @@ export function ProductCard({ product, locale = 'fr' }: ProductCardProps) {
             <Button
               onClick={handleAddToCart}
               disabled={isOutOfStock}
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-              size="sm"
+              className="w-full bg-green-500 text-white hover:bg-green-600 transition-all duration-200 rounded-xl font-bold text-lg py-3 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              {locale === 'ar' ? 'أضف للسلة' : 'Ajouter au panier'}
+              <Plus className="w-5 h-5 mr-2" />
+              {locale === 'ar' ? 'أضف للسلة' : 'أضف للسلة'}
             </Button>
           ) : (
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-4">
               <Button
                 onClick={handleDecrement}
                 variant="outline"
-                size="icon"
-                className="h-9 w-9 rounded-full"
+                size="lg"
+                className="h-12 w-12 rounded-full border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg"
               >
-                <Minus className="w-4 h-4" />
+                <Minus className="w-5 h-5" />
               </Button>
 
-              <span className="font-bold text-lg w-10 text-center">{quantity}</span>
+              <span className="font-bold text-2xl w-12 text-center text-green-600">{quantity}</span>
 
               <Button
                 onClick={handleIncrement}
                 variant="outline"
-                size="icon"
+                size="lg"
                 disabled={quantity >= product.stockQuantity}
-                className="h-9 w-9 rounded-full"
+                className="h-12 w-12 rounded-full border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-5 h-5" />
               </Button>
             </div>
           )}

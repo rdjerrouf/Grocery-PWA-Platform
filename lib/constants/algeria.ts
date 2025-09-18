@@ -3,9 +3,9 @@
 
 export interface wilaya {
   code: string
-  name: string        // French name
-  nameAr: string      // Arabic name
-  cities: string[]    // Cities in French
+  name: string
+  nameAr: string
+  cities: string[]
 }
 
 // All 58 wilayas of Algeria
@@ -385,3 +385,4 @@ export function searchWilayas(query: string): wilaya[] {
     wilaya.cities.some(city => city.toLowerCase().includes(lowerQuery))
   )
 }
+
