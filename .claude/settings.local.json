@@ -47,7 +47,11 @@
       "Bash(psql:*)",
       "Bash(node:*)",
       "mcp__filesystem__read_multiple_files",
-      "mcp__filesystem__edit_file"
+      "mcp__filesystem__edit_file",
+      "Bash(supabase migration:*)",
+      "Bash(supabase storage:*)",
+      "mcp__filesystem__write_file",
+      "Bash(npm run lint)"
     ],
     "deny": [],
     "ask": []

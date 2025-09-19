@@ -2,6 +2,8 @@ import { ReactNode } from 'react'
 import { ArrowLeft, Search, ShoppingCart, User, Globe } from 'lucide-react'
 import Link from 'next/link'
 import { Database } from '@/lib/supabase/types'
+import { CartButton } from '@/components/shop/CartButton'
+import { CartSidebar } from '@/components/shop/CartSidebar'
 
 type DbTenant = Database['public']['Tables']['tenants']['Row']
 type DbCategory = Database['public']['Tables']['categories']['Row']
@@ -47,16 +49,32 @@ export function StoreLayout({ children, tenant, categories = [], locale = 'fr' }
             {/* Right side - Actions */}
             <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
               {/* Language Toggle */}
-              <button
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                aria-label={locale === 'ar' ? 'تغيير اللغة' : 'Changer la langue'}
-              >
-                <Globe className="w-5 h-5 text-gray-600" />
-              </button>
+              <div className="flex items-center gap-1">
+                <Link
+                  href={`/stores/${tenant.slug}?locale=fr`}
+                  className={`px-3 py-1 text-sm rounded transition-colors ${
+                    locale === 'fr'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  Français
+                </Link>
+                <Link
+                  href={`/stores/${tenant.slug}?locale=ar`}
+                  className={`px-3 py-1 text-sm rounded transition-colors ${
+                    locale === 'ar'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  العربية
+                </Link>
+              </div>
 
               {/* Search */}
               <Link
-                href={`/stores/${tenant.slug}/search`}
+                href={`/stores/${tenant.slug}/search?locale=${locale}`}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 aria-label={locale === 'ar' ? 'البحث' : 'Rechercher'}
               >
@@ -64,20 +82,11 @@ export function StoreLayout({ children, tenant, categories = [], locale = 'fr' }
               </Link>
 
               {/* Cart */}
-              <button
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
-                aria-label={locale === 'ar' ? 'سلة التسوق' : 'Panier'}
-              >
-                <ShoppingCart className="w-5 h-5 text-gray-600" />
-                {/* Cart badge - placeholder for now */}
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">
-                  0
-                </span>
-              </button>
+              <CartButton tenantId={tenant.id} locale={locale} />
 
               {/* User */}
               <Link
-                href={`/stores/${tenant.slug}/auth/signin`}
+                href={`/stores/${tenant.slug}/auth/signin?locale=${locale}`}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 aria-label={locale === 'ar' ? 'تسجيل الدخول' : 'Se connecter'}
               >
@@ -98,7 +107,7 @@ export function StoreLayout({ children, tenant, categories = [], locale = 'fr' }
                   return (
                     <Link
                       key={category.id}
-                      href={`/stores/${tenant.slug}/category/${category.slug}`}
+                      href={`/stores/${tenant.slug}/category/${category.slug}?locale=${locale}`}
                       className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 whitespace-nowrap transition-colors"
                     >
                       {categoryName}
@@ -115,6 +124,9 @@ export function StoreLayout({ children, tenant, categories = [], locale = 'fr' }
       <main>
         {children}
       </main>
+
+      {/* Cart Sidebar */}
+      <CartSidebar tenantId={tenant.id} tenantSlug={tenant.slug} locale={locale} />
 
       {/* Footer */}
       <footer className="bg-white border-t mt-12">

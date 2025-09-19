@@ -51,6 +51,20 @@ export default async function StorePage({ params, searchParams }: StorePageProps
   return (
     <StoreLayout tenant={tenant} categories={categories} locale={locale}>
       <div className="bg-gray-50 min-h-screen">
+        {/* Store Welcome Section */}
+        <section className="bg-white py-6 px-4 border-b">
+          <div className="max-w-6xl mx-auto text-center">
+            <h1 className={`text-3xl font-bold text-gray-900 mb-2 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+              {locale === 'ar' ? (tenant.name_ar || tenant.name) : tenant.name}
+            </h1>
+            {tenant.address && (
+              <p className={`text-gray-600 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                {tenant.address}
+              </p>
+            )}
+          </div>
+        </section>
+
         {/* Categories Navigation - Large Circular Icons */}
         {categories.length > 0 && (
           <section className="bg-white py-8 px-4 shadow-sm">
@@ -62,8 +76,9 @@ export default async function StorePage({ params, searchParams }: StorePageProps
                 const IconComponent = getCategoryIcon(categoryName)
 
                 return (
-                  <div
+                  <a
                     key={category.id}
+                    href={`/stores/${tenant.slug}/category/${category.slug}?locale=${locale}`}
                     className="flex flex-col items-center gap-3 min-w-[100px] cursor-pointer group"
                   >
                     <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center group-hover:from-green-500 group-hover:to-green-700 transition-all duration-300 shadow-lg group-hover:shadow-xl transform group-hover:scale-105">
@@ -72,7 +87,7 @@ export default async function StorePage({ params, searchParams }: StorePageProps
                     <span className={`text-sm text-gray-800 text-center font-semibold leading-tight ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
                       {categoryName}
                     </span>
-                  </div>
+                  </a>
                 )
               })}
             </div>
@@ -97,6 +112,8 @@ export default async function StorePage({ params, searchParams }: StorePageProps
                     product={product}
                     locale={locale}
                     gradientIndex={index}
+                    tenantId={tenant.id}
+                    tenantSlug={tenant.slug}
                   />
                 </div>
               ))}
@@ -114,7 +131,7 @@ export default async function StorePage({ params, searchParams }: StorePageProps
         </section>
 
         {/* Store Info */}
-        <section className="mt-12 bg-card p-6 rounded-lg">
+        <section className="mt-12 bg-white p-6 rounded-lg shadow-sm">
           <h3 className={`text-lg font-semibold mb-4 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
             {locale === 'ar' ? 'معلومات المتجر' : 'Informations du magasin'}
           </h3>

@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
     const { data: tenant } = await supabase
       .from('tenants')
       .select('id, is_active')
-      .eq('subdomain', tenantSlug)
+      .eq('slug', tenantSlug)
       .eq('is_active', true)
       .single()
 

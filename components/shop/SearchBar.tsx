@@ -72,7 +72,10 @@ export function SearchBar({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
-    debouncedSearch(value);
+    // Only trigger search if onSearch callback is provided (for inline search)
+    if (onSearch) {
+      debouncedSearch(value);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -102,10 +105,10 @@ export function SearchBar({
   return (
     <form onSubmit={handleSubmit} className={`relative ${className}`}>
       <div className="relative">
-        <Search 
-          className={`absolute top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground ${
-            isRTL ? 'right-3' : 'left-3'
-          }`} 
+        <Search
+          className={`absolute top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 ${
+            isRTL ? 'left-3' : 'right-3'
+          }`}
         />
         <input
           type="text"
@@ -117,9 +120,9 @@ export function SearchBar({
               : 'Rechercher des produits...'
           }
           className={`
-            w-full h-12 bg-secondary rounded-lg border border-border
-            ${isRTL ? 'pr-12 pl-12 text-right' : 'pl-12 pr-12 text-left'}
-            focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
+            w-full h-12 bg-white rounded-lg border border-gray-300
+            ${isRTL ? 'pl-12 pr-10 text-right' : 'pr-12 pl-4 text-left'}
+            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
             transition-all duration-200
           `}
           dir={isRTL ? 'rtl' : 'ltr'}
@@ -131,8 +134,8 @@ export function SearchBar({
             size="sm"
             onClick={handleClear}
             className={`absolute top-1/2 transform -translate-y-1/2 ${
-              isRTL ? 'left-2' : 'right-2'
-            } h-8 w-8`}
+              isRTL ? 'left-2' : 'right-10'
+            } h-8 w-8 p-1`}
           >
             <X className="w-4 h-4" />
           </Button>

@@ -13,6 +13,7 @@
     "test:report": "playwright show-report"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.8",
     "@hookform/resolvers": "^5.2.1",
     "@next/bundle-analyzer": "^15.5.0",
     "@supabase/auth-helpers-nextjs": "^0.10.0",

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Grocery Platform - Multi-tenant PWA",
+  title: "Grocery PWA Platform",
   description: "Multi-tenant grocery platform with French and Arabic support for Algerian stores",
 };
 

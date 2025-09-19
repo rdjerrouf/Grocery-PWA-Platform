@@ -1,16 +1,39 @@
-import { ShoppingCart, Heart } from 'lucide-react'
+'use client'
+
+import { ShoppingCart, Heart, Plus, Minus } from 'lucide-react'
+import Link from 'next/link'
 import { FrontendProduct, getDisplayName, getDisplayDescription, formatPrice } from '@/lib/utils/product'
+import { useCartStore } from '@/lib/stores/cart'
 
 interface ProductCardProps {
   product: FrontendProduct
   locale?: 'fr' | 'ar'
   gradientIndex?: number
+  tenantId?: string
+  tenantSlug?: string
 }
 
-export function ProductCard({ product, locale = 'fr', gradientIndex = 0 }: ProductCardProps) {
+export function ProductCard({ product, locale = 'fr', gradientIndex = 0, tenantId, tenantSlug }: ProductCardProps) {
   const name = getDisplayName(product, locale)
   const description = getDisplayDescription(product, locale)
   const isRTL = locale === 'ar'
+
+  const { addItem, getItemQuantity, updateQuantity } = useCartStore()
+  const quantity = getItemQuantity(product.id)
+
+  const handleAddToCart = () => {
+    if (tenantId && product.isAvailable) {
+      addItem(product, tenantId, 1)
+    }
+  }
+
+  const handleQuantityChange = (newQuantity: number) => {
+    if (newQuantity <= 0) {
+      updateQuantity(product.id, 0)
+    } else {
+      updateQuantity(product.id, newQuantity)
+    }
+  }
 
   // Gradient colors for product cards
   const gradients = [
@@ -69,14 +92,31 @@ export function ProductCard({ product, locale = 'fr', gradientIndex = 0 }: Produ
 
       {/* Product Info */}
       <div className="p-4">
-        <h3 className={`font-semibold text-gray-900 mb-2 line-clamp-2 ${isRTL ? 'text-right' : 'text-left'}`}>
-          {name}
-        </h3>
+        {/* Clickable product info section */}
+        {tenantSlug ? (
+          <Link href={`/stores/${tenantSlug}/product/${product.id}?locale=${locale}`} className="block">
+            <h3 className={`font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors ${isRTL ? 'text-right' : 'text-left'}`}>
+              {name}
+            </h3>
 
-        {description && (
-          <p className={`text-sm text-gray-600 mb-3 line-clamp-2 ${isRTL ? 'text-right' : 'text-left'}`}>
-            {description}
-          </p>
+            {description && (
+              <p className={`text-sm text-gray-600 mb-3 line-clamp-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+                {description}
+              </p>
+            )}
+          </Link>
+        ) : (
+          <>
+            <h3 className={`font-semibold text-gray-900 mb-2 line-clamp-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+              {name}
+            </h3>
+
+            {description && (
+              <p className={`text-sm text-gray-600 mb-3 line-clamp-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+                {description}
+              </p>
+            )}
+          </>
         )}
 
         {/* Price and unit */}
@@ -117,25 +157,47 @@ export function ProductCard({ product, locale = 'fr', gradientIndex = 0 }: Produ
           </div>
         </div>
 
-        {/* Add to cart button */}
-        <button
-          disabled={!product.isAvailable}
-          className={`w-full py-2 px-4 rounded-lg font-semibold transition-all duration-200 ${
-            product.isAvailable
-              ? 'bg-green-600 hover:bg-green-700 text-white hover:shadow-lg transform hover:scale-105'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
-        >
-          <div className={`flex items-center justify-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-            <ShoppingCart className="w-4 h-4" />
-            <span>
-              {product.isAvailable
-                ? (locale === 'ar' ? 'إضافة للسلة' : 'Ajouter au panier')
-                : (locale === 'ar' ? 'غير متوفر' : 'Non disponible')
-              }
+        {/* Add to cart button or quantity controls */}
+        {quantity > 0 ? (
+          <div className={`flex items-center justify-between bg-green-50 border-2 border-green-600 rounded-lg p-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <button
+              onClick={() => handleQuantityChange(quantity - 1)}
+              className="p-1 hover:bg-green-100 rounded-full transition-colors"
+            >
+              <Minus className="w-4 h-4 text-green-600" />
+            </button>
+            <span className="font-semibold text-green-700 min-w-[2rem] text-center">
+              {quantity}
             </span>
+            <button
+              onClick={() => handleQuantityChange(quantity + 1)}
+              disabled={!product.isAvailable}
+              className="p-1 hover:bg-green-100 rounded-full transition-colors disabled:opacity-50"
+            >
+              <Plus className="w-4 h-4 text-green-600" />
+            </button>
           </div>
-        </button>
+        ) : (
+          <button
+            onClick={handleAddToCart}
+            disabled={!product.isAvailable || !tenantId}
+            className={`w-full py-2 px-4 rounded-lg font-semibold transition-all duration-200 ${
+              product.isAvailable && tenantId
+                ? 'bg-green-600 hover:bg-green-700 text-white hover:shadow-lg transform hover:scale-105'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            <div className={`flex items-center justify-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <ShoppingCart className="w-4 h-4" />
+              <span>
+                {product.isAvailable
+                  ? (locale === 'ar' ? 'إضافة للسلة' : 'Ajouter au panier')
+                  : (locale === 'ar' ? 'غير متوفر' : 'Non disponible')
+                }
+              </span>
+            </div>
+          </button>
+        )}
       </div>
     </div>
   )

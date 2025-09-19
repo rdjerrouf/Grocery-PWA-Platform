@@ -137,3 +137,20 @@ export async function searchProducts(
 
   return products || []
 }
+
+export async function getProductById(productId: string): Promise<DbProduct | null> {
+  const supabase = createServerClient()
+
+  const { data: product, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', productId)
+    .eq('is_active', true)
+    .single()
+
+  if (error || !product) {
+    return null
+  }
+
+  return product
+}

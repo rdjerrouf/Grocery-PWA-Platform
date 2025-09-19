@@ -1,155 +1,167 @@
-import { notFound } from 'next/navigation';
-import { Suspense } from 'react';
-import { StoreLayout } from '@/components/layout/StoreLayout';
-import { SearchBar } from '@/components/shop/SearchBar';
-import { ProductCard } from '@/components/shop/ProductCard';
-import { getTenantBySlug, getCategoriesByTenant, searchProducts } from '@/lib/supabase/queries';
-import { dbProductsToFrontend } from '@/lib/utils/product';
+import { notFound } from 'next/navigation'
+import { StoreLayout } from '@/components/layout/StoreLayout'
+import { ProductCard } from '@/components/shop/ProductCard'
+import { SearchBar } from '@/components/shop/SearchBar'
+import { getTenantBySlug, getCategoriesByTenant, searchProducts } from '@/lib/supabase/queries'
+import { dbProductsToFrontend } from '@/lib/utils/product'
 
 interface SearchPageProps {
   params: {
-    slug: string;
-  };
+    slug: string
+  }
   searchParams: {
-    q?: string;
-    locale?: 'fr' | 'ar';
-  };
-}
-
-async function SearchResults({ tenantId, query, locale }: { tenantId: string; query: string; locale: 'fr' | 'ar' }) {
-  if (!query.trim()) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">
-          {locale === 'ar' 
-            ? 'ابدأ بكتابة ما تبحث عنه...' 
-            : 'Commencez à taper pour rechercher des produits...'}
-        </p>
-      </div>
-    );
+    q?: string
+    category?: string
+    locale?: 'fr' | 'ar'
   }
-
-  const searchResults = await searchProducts(tenantId, query, locale);
-  const products = dbProductsToFrontend(searchResults);
-
-  if (products.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground mb-2">
-          {locale === 'ar' 
-            ? `لم يتم العثور على نتائج لـ "${query}"` 
-            : `Aucun résultat trouvé pour "${query}"`}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          {locale === 'ar' 
-            ? 'جرب كلمات مختلفة أو تصفح الفئات' 
-            : 'Essayez avec d\'autres mots-clés ou parcourez les catégories'}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <div className={`mb-6 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
-        <p className="text-sm text-muted-foreground">
-          {locale === 'ar' 
-            ? `${products.length} منتج موجود لـ "${query}"` 
-            : `${products.length} produit(s) trouvé(s) pour "${query}"`}
-        </p>
-      </div>
-      
-      <div 
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-        data-testid="search-results"
-      >
-        {products.map((product) => (
-          <ProductCard 
-            key={product.id} 
-            product={product} 
-            locale={locale}
-          />
-        ))}
-      </div>
-    </div>
-  );
 }
 
 export default async function SearchPage({ params, searchParams }: SearchPageProps) {
-  const { slug } = await params;
-  const resolvedSearchParams = await searchParams;
-  const locale = resolvedSearchParams.locale || 'fr';
-  const query = resolvedSearchParams.q || '';
+  const { slug } = await params
+  const resolvedSearchParams = await searchParams
+  const { q: query, category, locale = 'fr' } = resolvedSearchParams
 
-  // Get tenant and validate
-  const tenant = await getTenantBySlug(slug);
+  // Get tenant data
+  const tenant = await getTenantBySlug(slug)
   if (!tenant) {
-    notFound();
+    notFound()
   }
 
-  // Get categories for sidebar
-  const categories = await getCategoriesByTenant(tenant.id);
+  // Get categories for navigation
+  const categories = await getCategoriesByTenant(tenant.id)
+
+  // Search products if query exists
+  let products = []
+  if (query && query.trim()) {
+    const dbProducts = await searchProducts(tenant.id, query.trim())
+    products = dbProductsToFrontend(dbProducts)
+  }
+
+  // Get display name based on locale
+  const storeName = locale === 'ar' ? (tenant.name_ar || tenant.name) : tenant.name
 
   return (
     <StoreLayout tenant={tenant} categories={categories} locale={locale}>
-      <div className="container mx-auto px-4 py-8">
-        {/* Page Header */}
-        <div className={`mb-8 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
-          <h1 className="text-2xl font-bold mb-4">
-            {locale === 'ar' ? 'البحث عن المنتجات' : 'Recherche de produits'}
-          </h1>
-          
-          {/* Search Bar */}
-          <SearchBar 
-            tenantSlug={slug}
-            locale={locale}
-            initialQuery={query}
-            className="max-w-2xl"
-          />
+      <div className="bg-gray-50 min-h-screen">
+        {/* Header */}
+        <div className="bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <h1 className={`text-2xl font-bold text-gray-900 mb-4 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+              {locale === 'ar' ? 'البحث في المنتجات' : 'Recherche de produits'}
+            </h1>
+
+            {/* Search Bar */}
+            <SearchBar
+              tenantSlug={tenant.slug}
+              initialQuery={query || ''}
+              locale={locale}
+            />
+          </div>
         </div>
 
         {/* Search Results */}
-        <Suspense fallback={
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">
-              {locale === 'ar' ? 'جاري البحث...' : 'Recherche en cours...'}
-            </p>
-          </div>
-        }>
-          <SearchResults tenantId={tenant.id} query={query} locale={locale} />
-        </Suspense>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {query ? (
+            <>
+              {/* Results Header */}
+              <div className={`mb-6 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {locale === 'ar'
+                    ? `نتائج البحث عن "${query}"`
+                    : `Résultats pour "${query}"`
+                  }
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  {locale === 'ar'
+                    ? `تم العثور على ${products.length} منتج${products.length > 1 ? 'ات' : ''}`
+                    : `${products.length} produit${products.length > 1 ? 's' : ''} trouvé${products.length > 1 ? 's' : ''}`
+                  }
+                </p>
+              </div>
 
-        {/* Popular Categories */}
-        {categories.length > 0 && (
-          <section className="mt-16">
-            <h2 className={`text-xl font-semibold mb-6 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
-              {locale === 'ar' ? 'تصفح حسب الفئة' : 'Parcourir par catégorie'}
-            </h2>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {categories.map((category) => {
-                const categoryName = locale === 'ar' ? 
-                  (category.name_ar || category.name) : 
-                  category.name;
-                
+              {/* Products Grid */}
+              {products.length > 0 ? (
+                <div
+                  className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${
+                    locale === 'ar' ? 'direction-rtl' : ''
+                  }`}
+                  data-testid="search-results"
+                >
+                  {products.map((product, index) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      locale={locale}
+                      gradientIndex={index}
+                      tenantId={tenant.id}
+                      tenantSlug={tenant.slug}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-gray-500">
+                    <p className="text-lg font-medium">
+                      {locale === 'ar' ? 'لا توجد نتائج' : 'Aucun résultat trouvé'}
+                    </p>
+                    <p className="mt-2">
+                      {locale === 'ar'
+                        ? 'جرب البحث بكلمات مختلفة أو تصفح الفئات'
+                        : 'Essayez avec des mots différents ou parcourez les catégories'
+                      }
+                    </p>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            /* No Search Query */
+            <div className="text-center py-12">
+              <div className="text-gray-500">
+                <p className="text-lg font-medium">
+                  {locale === 'ar' ? 'ابدأ البحث' : 'Commencez votre recherche'}
+                </p>
+                <p className="mt-2">
+                  {locale === 'ar'
+                    ? 'أدخل كلمة في مربع البحث للعثور على المنتجات'
+                    : 'Entrez un terme dans la barre de recherche pour trouver des produits'
+                  }
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Popular Categories - Show when no search or no results */}
+        {(!query || products.length === 0) && categories.length > 0 && (
+          <div className="max-w-7xl mx-auto px-4 pb-8">
+            <h3 className={`text-lg font-semibold text-gray-900 mb-4 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+              {locale === 'ar' ? 'تصفح الفئات' : 'Parcourir les catégories'}
+            </h3>
+            <div className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${
+              locale === 'ar' ? 'direction-rtl' : ''
+            }`}>
+              {categories.slice(0, 8).map((category) => {
+                const categoryName = locale === 'ar' ?
+                  (category.name_ar || category.name) :
+                  category.name
+
                 return (
                   <a
                     key={category.id}
-                    href={`/stores/${slug}/category/${category.id}?locale=${locale}`}
-                    className={`
-                      bg-card border border-border rounded-lg p-4 text-center
-                      hover:bg-secondary transition-colors
-                      ${locale === 'ar' ? 'text-right' : 'text-left'}
-                    `}
+                    href={`/stores/${tenant.slug}/category/${category.slug}?locale=${locale}`}
+                    className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-gray-200"
                   >
-                    <span className="text-sm font-medium">{categoryName}</span>
+                    <h4 className={`font-medium text-gray-900 ${locale === 'ar' ? 'text-right' : 'text-left'}`}>
+                      {categoryName}
+                    </h4>
                   </a>
-                );
+                )
               })}
             </div>
-          </section>
+          </div>
         )}
       </div>
     </StoreLayout>
-  );
+  )
 }
