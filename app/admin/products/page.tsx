@@ -48,6 +48,20 @@ export default async function AdminProductsPage() {
     `)
     .order('created_at', { ascending: false })
 
+  // Fetch categories for filter dropdown
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('id, name, slug')
+    .eq('is_active', true)
+    .order('name')
+
+  // Fetch tenants for filter dropdown
+  const { data: tenants } = await supabase
+    .from('tenants')
+    .select('id, name, slug')
+    .eq('is_active', true)
+    .order('name')
+
   if (error) {
     console.error('Error fetching products:', error)
   }
@@ -84,11 +98,19 @@ export default async function AdminProductsPage() {
             <div className="flex gap-2">
               <select className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">All Stores</option>
-                {/* TODO: Add dynamic store options */}
+                {tenants?.map((tenant) => (
+                  <option key={tenant.id} value={tenant.slug}>
+                    {tenant.name}
+                  </option>
+                ))}
               </select>
               <select className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">All Categories</option>
-                {/* TODO: Add dynamic category options */}
+                {categories?.map((category) => (
+                  <option key={category.id} value={category.slug}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
               <select className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">All Status</option>
