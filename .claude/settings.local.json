@@ -33,7 +33,21 @@
       "mcp__ide__getDiagnostics",
       "Bash(open http://localhost:3000)",
       "Bash(open:*)",
-      "Bash(supabase start:*)"
+      "Bash(supabase start:*)",
+      "Bash(supabase status:*)",
+      "Bash(supabase init:*)",
+      "Bash(npm test)",
+      "mcp__filesystem__list_directory",
+      "Bash(pnpm dev:*)",
+      "Bash(npm test:*)",
+      "mcp__filesystem__create_directory",
+      "Read(//Users/ryad/Desktop/**)",
+      "mcp__postgresql__query",
+      "Bash(supabase db:*)",
+      "Bash(psql:*)",
+      "Bash(node:*)",
+      "mcp__filesystem__read_multiple_files",
+      "mcp__filesystem__edit_file"
     ],
     "deny": [],
     "ask": []

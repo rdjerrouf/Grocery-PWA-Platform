@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DzMarket - Algerian Local Marketplace PWA",
+  title: "Grocery Platform - Multi-tenant PWA",
   description: "Multi-tenant grocery platform with French and Arabic support for Algerian stores",
 };
 

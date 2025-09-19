@@ -1,9 +1,12 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { Database } from './types'
 
 export async function createMiddlewareSupabaseClient(req: NextRequest, res: NextResponse) {
-  return createMiddlewareClient<Database>({ req, res })
+  return createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 }
 
 export async function getSession(req: NextRequest, res: NextResponse) {
