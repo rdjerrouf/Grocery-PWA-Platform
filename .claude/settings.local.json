@@ -51,7 +51,10 @@
       "Bash(supabase migration:*)",
       "Bash(supabase storage:*)",
       "mcp__filesystem__write_file",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Bash(git commit:*)",
+      "Bash(NODE_OPTIONS='--inspect' npm run dev)",
+      "Bash(supabase stop:*)"
     ],
     "deny": [],
     "ask": []

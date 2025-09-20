@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Menu, Search, ShoppingCart, User } from 'lucide-react';
+import { Menu, Search, ShoppingCart } from 'lucide-react';
 import { useCartStore } from '@/stores/useCartStore';
+import { UserMenu } from '@/components/auth/UserMenu';
 import type { Tenant } from '@/lib/supabase/types';
 
 interface HeaderProps {
@@ -16,12 +16,8 @@ interface HeaderProps {
 export function Header({ tenant, locale, onMenuToggle }: HeaderProps) {
   const { items } = useCartStore();
   const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  
-  // Mock user state - will be replaced with real auth
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  
+
   const isRTL = locale === 'ar';
-  const storeName = locale === 'ar' ? (tenant.name_ar || tenant.name) : tenant.name;
 
   return (
     <header className="bg-gradient-to-r from-purple-600 via-blue-600 to-green-500 text-white">
@@ -85,21 +81,7 @@ export function Header({ tenant, locale, onMenuToggle }: HeaderProps) {
             </Link>
 
             {/* User Menu */}
-            {isAuthenticated ? (
-              <Link
-                href={`/stores/${tenant.slug}/profile?locale=${locale}`}
-                className="inline-flex items-center justify-center rounded-lg h-10 w-10 hover:bg-white/20 transition-colors"
-              >
-                <User className="w-5 h-5" />
-              </Link>
-            ) : (
-              <Link
-                href={`/stores/${tenant.slug}/auth/signin?locale=${locale}`}
-                className="bg-white/20 hover:bg-white/30 inline-flex items-center justify-center rounded-lg h-10 px-4 text-sm font-medium transition-colors"
-              >
-                {locale === 'ar' ? 'دخول' : 'Connexion'}
-              </Link>
-            )}
+            <UserMenu tenantSlug={tenant.slug} locale={locale} />
           </div>
         </div>
 

@@ -96,12 +96,50 @@ middleware.ts           # Tenant validation and auth middleware
 - **Server Actions**: Use `createServerActionClient()` from `lib/supabase/server.ts`
 - **Middleware**: Use `createMiddlewareSupabaseClient()` from `lib/supabase/middleware.ts`
 
+## Authentication System
+
+### Complete Implementation
+The authentication system is fully implemented with:
+
+#### 🔐 Authentication Flow
+- **Sign Up**: Complete user registration with email confirmation
+- **Sign In**: Email/password authentication with tenant validation
+- **Email Verification**: Inbucket testing server for development emails
+- **Password Reset**: Forgot password and reset password functionality
+- **User Profiles**: Automatic profile creation via database triggers
+
+#### 📧 Email Configuration
+- **Development**: Uses Inbucket (http://127.0.0.1:54324) for email testing
+- **Configuration**: Email confirmations enabled in `supabase/config.toml`
+- **Templates**: Default Supabase email templates with confirmation links
+
+#### 🛡️ Security Features
+- **Tenant Isolation**: Row-level security policies enforce tenant boundaries
+- **Password Requirements**: Minimum 6 characters (configurable)
+- **Email Verification**: Required for account activation
+- **Session Management**: JWT-based authentication with refresh tokens
+
+#### 🧩 Components
+- `SignUpForm.tsx` - User registration with validation
+- `SignInForm.tsx` - User login form
+- `ForgotPasswordForm.tsx` - Password recovery
+- `ResetPasswordForm.tsx` - Password reset
+- `UserMenu.tsx` - Authenticated user dropdown menu
+- Email confirmation pages with multi-language support
+
+#### 🗄️ Database Schema
+- `auth.users` - Supabase auth users table
+- `profiles` - User profiles with tenant relationship
+- Database trigger `handle_new_user()` for automatic profile creation
+- RLS policies ensuring tenant data isolation
+
 ### Authentication Flow
-1. User visits `/stores/[slug]/auth/signin`
+1. User visits `/stores/[slug]/auth/signin` or `/stores/[slug]/auth/signup`
 2. Middleware validates tenant exists
 3. Server action handles auth with tenant context
-4. Successful auth redirects to store homepage
-5. RLS policies ensure user only sees tenant-specific data
+4. Email confirmation sent via Inbucket (development)
+5. Successful auth redirects to store homepage
+6. RLS policies ensure user only sees tenant-specific data
 
 ### Database Queries
 All queries automatically respect tenant boundaries via RLS policies:
@@ -174,6 +212,13 @@ Use seed data from `supabase/seed.sql` for consistent test scenarios.
 2. Write SQL in generated migration file
 3. Test locally: `supabase db reset`
 4. Apply to remote: `supabase db push`
+
+### Authentication Testing
+1. Start development: `npm run dev`
+2. Start Supabase: `supabase start`
+3. Open Inbucket: http://127.0.0.1:54324
+4. Test signup at: `/stores/[slug]/auth/signup`
+5. Check emails in Inbucket for confirmation links
 
 ### Internationalization Updates
 1. Add translations to message files
