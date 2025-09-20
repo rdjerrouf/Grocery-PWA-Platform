@@ -14,7 +14,8 @@ import {
   Menu,
   X,
   Home,
-  FolderTree
+  FolderTree,
+  UserCog
 } from 'lucide-react'
 
 interface AdminLayoutProps {
@@ -24,6 +25,7 @@ interface AdminLayoutProps {
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { name: 'Stores', href: '/admin/stores', icon: Store },
+  { name: 'Store Admins', href: '/admin/store-admins', icon: UserCog },
   { name: 'Products', href: '/admin/products', icon: Package },
   { name: 'Categories', href: '/admin/categories', icon: FolderTree },
   { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
