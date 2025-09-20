@@ -4,6 +4,7 @@ import { ShoppingCart, Heart, Plus, Minus } from 'lucide-react'
 import Link from 'next/link'
 import { FrontendProduct, getDisplayName, getDisplayDescription, formatPrice } from '@/lib/utils/product'
 import { useCartStore } from '@/lib/stores/cart'
+import { ProductImage } from '@/components/ui/optimized-image'
 
 interface ProductCardProps {
   product: FrontendProduct
@@ -52,10 +53,13 @@ export function ProductCard({ product, locale = 'fr', gradientIndex = 0, tenantI
       {/* Product Image */}
       <div className={`h-48 bg-gradient-to-br ${gradient} relative overflow-hidden`}>
         {product.imageUrl ? (
-          <img
+          <ProductImage
             src={product.imageUrl}
             alt={name}
+            size="medium"
+            priority={gradientIndex < 4} // Prioritize first 4 images
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            containerClassName="w-full h-full"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

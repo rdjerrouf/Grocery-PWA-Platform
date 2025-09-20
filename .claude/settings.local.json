@@ -54,7 +54,8 @@
       "Bash(npm run lint)",
       "Bash(git commit:*)",
       "Bash(NODE_OPTIONS='--inspect' npm run dev)",
-      "Bash(supabase stop:*)"
+      "Bash(supabase stop:*)",
+      "mcp__filesystem__read_text_file"
     ],
     "deny": [],
     "ask": []

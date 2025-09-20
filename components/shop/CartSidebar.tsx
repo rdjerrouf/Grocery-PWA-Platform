@@ -1,6 +1,7 @@
 'use client'
 
 import { Fragment } from 'react'
+import { useRouter } from 'next/navigation'
 import { Dialog, Transition } from '@headlessui/react'
 import { X, Plus, Minus, ShoppingBag, Trash2 } from 'lucide-react'
 import { useCartStore } from '@/lib/stores/cart'
@@ -14,6 +15,7 @@ interface CartSidebarProps {
 }
 
 export function CartSidebar({ tenantId, tenantSlug, locale }: CartSidebarProps) {
+  const router = useRouter()
   const {
     isOpen,
     closeCart,
@@ -195,8 +197,8 @@ export function CartSidebar({ tenantId, tenantSlug, locale }: CartSidebarProps) 
                           <Button
                             className="w-full"
                             onClick={() => {
-                              // TODO: Navigate to checkout
-                              console.log('Navigate to checkout')
+                              closeCart()
+                              router.push(`/stores/${tenantSlug}/checkout?locale=${locale}`)
                             }}
                           >
                             {locale === 'ar' ? 'الدفع' : 'Commander'}
