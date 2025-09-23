@@ -55,7 +55,14 @@
       "Bash(git commit:*)",
       "Bash(NODE_OPTIONS='--inspect' npm run dev)",
       "Bash(supabase stop:*)",
-      "mcp__filesystem__read_text_file"
+      "mcp__filesystem__read_text_file",
+      "Bash(grep:*)",
+      "Bash(tree:*)",
+      "Bash(awk:*)",
+      "Bash(pnpm test:*)",
+      "Bash(BASE_URL=http://localhost:3000 npx playwright test --config=playwright.config.ts)",
+      "Bash(echo:*)",
+      "mcp__filesystem__directory_tree"
     ],
     "deny": [],
     "ask": []

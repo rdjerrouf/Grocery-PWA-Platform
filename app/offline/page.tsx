@@ -1,3 +1,5 @@
+'use client'
+
 export default function OfflinePage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -20,12 +22,12 @@ export default function OfflinePage() {
           </div>
 
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            You're Offline
+            You&apos;re Offline
           </h1>
 
           <p className="text-gray-600 mb-6">
-            It looks like you're not connected to the internet.
-            Don't worry, you can still browse previously loaded content.
+            It looks like you&apos;re not connected to the internet.
+            Don&apos;t worry, you can still browse previously loaded content.
           </p>
 
           <div className="space-y-4">
@@ -61,7 +63,3 @@ export default function OfflinePage() {
   )
 }
 
-export const metadata = {
-  title: 'Offline - Grocery PWA',
-  description: 'You are currently offline',
-}

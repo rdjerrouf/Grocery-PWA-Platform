@@ -4,30 +4,32 @@ import { CheckoutForm } from '@/components/shop/CheckoutForm'
 import { getTranslations } from 'next-intl/server'
 
 interface CheckoutPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
-  searchParams: {
+  }>
+  searchParams: Promise<{
     locale?: 'fr' | 'ar'
-  }
+  }>
 }
 
 export default async function CheckoutPage({ params, searchParams }: CheckoutPageProps) {
-  const locale = (searchParams.locale || 'ar') as 'fr' | 'ar'
-  const t = await getTranslations('checkout')
+  const resolvedParams = await params
+  const resolvedSearchParams = await searchParams
+  const locale = (resolvedSearchParams.locale || 'ar') as 'fr' | 'ar'
+  const t = await getTranslations({ locale, namespace: 'checkout' })
   const supabase = createServerClient()
 
   // Check authentication
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
-    redirect(`/stores/${params.slug}/auth/signin?redirect=/stores/${params.slug}/checkout`)
+    redirect(`/stores/${resolvedParams.slug}/auth/signin?redirect=/stores/${resolvedParams.slug}/checkout`)
   }
 
   // Get tenant information
   const { data: tenant } = await supabase
     .from('tenants')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', resolvedParams.slug)
     .eq('is_active', true)
     .single()
 
@@ -63,7 +65,7 @@ export default async function CheckoutPage({ params, searchParams }: CheckoutPag
     .eq('tenant_id', tenant.id)
 
   if (!cartItems || cartItems.length === 0) {
-    redirect(`/stores/${params.slug}`)
+    redirect(`/stores/${resolvedParams.slug}`)
   }
 
   const isRTL = locale === 'ar'
@@ -89,12 +91,22 @@ export default async function CheckoutPage({ params, searchParams }: CheckoutPag
 }
 
 export async function generateMetadata({ params, searchParams }: CheckoutPageProps) {
-  const locale = (searchParams.locale || 'ar') as 'fr' | 'ar'
-  
+  const resolvedSearchParams = await searchParams
+  const locale = (resolvedSearchParams.locale || 'ar') as 'fr' | 'ar'
+
   return {
     title: locale === 'ar' ? 'إتمام الطلب' : 'Finaliser la commande',
-    description: locale === 'ar' 
+    description: locale === 'ar'
       ? 'راجع طلبك وأكمل عملية الشراء'
       : 'Vérifiez votre commande et finalisez votre achat',
+  }
+}
+
+export function generateViewport() {
+  return {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    themeColor: '#10B981',
   }
 }
