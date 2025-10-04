@@ -7,27 +7,30 @@ test.describe('Product Card Component', () => {
   });
 
   test('should display product information correctly', async ({ page }) => {
-    // Wait for potential products to load
+    // Wait for products to load
     await page.waitForTimeout(2000);
-    
-    // Check if any product cards exist
-    const productCards = page.locator('[data-testid="product-card"]');
-    const productCount = await productCards.count();
-    
-    if (productCount > 0) {
+
+    // Check if product grid exists
+    const productGrid = page.locator('[data-testid="product-grid"]');
+    const hasProducts = await productGrid.isVisible().catch(() => false);
+
+    if (hasProducts) {
+      // Products exist - verify first product
+      const productCards = productGrid.locator('> div');
       const firstProduct = productCards.first();
-      
+
       // Product card should be visible
       await expect(firstProduct).toBeVisible();
-      
+
       // Should contain product name
       await expect(firstProduct.locator('h3')).toBeVisible();
-      
+
       // Should contain price in DZD
-      await expect(firstProduct.locator('text=/DZD/')).toBeVisible();
-      
-      // Should contain "Add to Cart" button
-      await expect(firstProduct.getByRole('button', { name: /Add to Cart/i })).toBeVisible();
+      const priceElement = firstProduct.locator('text=/\\d+\\.\\d+\\s*DZD/');
+      await expect(priceElement.or(firstProduct.locator('span:has-text("DZD")')).first()).toBeVisible();
+
+      // Should contain "Ajouter au panier" button (French)
+      await expect(firstProduct.getByRole('button', { name: /Ajouter au panier/i })).toBeVisible();
     } else {
       // No products case - check for empty state message
       await expect(page.getByText(/Aucun produit en vedette/)).toBeVisible();
@@ -36,17 +39,18 @@ test.describe('Product Card Component', () => {
 
   test('should show product images or placeholder', async ({ page }) => {
     await page.waitForTimeout(2000);
-    
-    const productCards = page.locator('[data-testid="product-card"]');
-    const productCount = await productCards.count();
-    
-    if (productCount > 0) {
+
+    const productGrid = page.locator('[data-testid="product-grid"]');
+    const hasProducts = await productGrid.isVisible().catch(() => false);
+
+    if (hasProducts) {
+      const productCards = productGrid.locator('> div');
       const firstProduct = productCards.first();
       const productImage = firstProduct.locator('img');
-      
+
       // Should have an image (either product image or placeholder)
       await expect(productImage).toBeVisible();
-      
+
       // Image should have alt text
       await expect(productImage).toHaveAttribute('alt');
     }
@@ -84,14 +88,15 @@ test.describe('Product Card Component', () => {
       // Switch to Arabic
       await page.goto('/stores/ahmed-grocery?locale=ar');
       await page.waitForTimeout(2000);
-      
-      const productCards = page.locator('[data-testid="product-card"]');
-      const productCount = await productCards.count();
-      
-      if (productCount > 0) {
+
+      const productGrid = page.locator('[data-testid="product-grid"]');
+      const hasProducts = await productGrid.isVisible().catch(() => false);
+
+      if (hasProducts) {
+        const productCards = productGrid.locator('> div');
         // Product cards should still be visible
         await expect(productCards.first()).toBeVisible();
-        
+
         // Add to Cart button should be in Arabic context
         const addToCartButton = productCards.first().getByRole('button').first();
         await expect(addToCartButton).toBeVisible();

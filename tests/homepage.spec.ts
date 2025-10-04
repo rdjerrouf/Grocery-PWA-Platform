@@ -10,7 +10,7 @@ test.describe('Homepage', () => {
 
     // Check demo store section
     await expect(page.getByRole('heading', { name: 'Demo Store' })).toBeVisible();
-    await expect(page.getByText('Ahmed Grocery Store')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Ahmed Grocery Store' })).toBeVisible();
 
     // Check language links
     await expect(page.getByRole('link', { name: 'View in French' })).toBeVisible();
